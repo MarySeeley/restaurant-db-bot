@@ -262,7 +262,7 @@ I tried all three strategies from the paper:
 
 - **Zero-shot**: Schema only, no examples. Worked well for straightforward queries like counting orders, but produced vague results on questions like "what should I get".
 - **Single-domain**: Schema plus one example question and answer from the restaurant domain. Improved consistency on similar query patterns.
-- **Multi-domain**: Schema plus two examples covering different question types (a count query and an aggregation query). This helped the most with varied questions, especially ones that needed GROUP BY or ORDER BY.
+- **Cross-domain**: Schema plus examples drawn from a completely different database (not the restaurant). The idea from the paper is that showing GPT SQL patterns from an unrelated domain still teaches it the query structure without "leaking" answers from the same database. This helped the most with varied questions, especially ones that needed GROUP BY or ORDER BY.
 
 ## Conclusion
 

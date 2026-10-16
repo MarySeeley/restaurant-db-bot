@@ -75,7 +75,9 @@ SQL_ONLY = (
 #
 # ZERO-SHOT: Just the schema. GPT has to figure everything else out on its own.
 # SINGLE-DOMAIN: Schema + one worked example (same restaurant domain).
-# MULTI-DOMAIN: Schema + two worked examples covering different question styles.
+# CROSS-DOMAIN: Schema + examples from a completely different database (a school).
+#   The paper calls this cross-domain — the examples come from an unrelated domain
+#   so GPT learns the SQL pattern without getting hints about the restaurant data.
 
 STRATEGIES = {
     "zero_shot": (
@@ -90,15 +92,15 @@ STRATEGIES = {
         + SQL_ONLY
     ),
 
-    "multi_domain": (
+    "cross_domain": (
         SCHEMA
-        + "\n\nExamples:\n"
-        + "Q: What is the most expensive item on the menu?\n"
-        + "A: SELECT name, price FROM menu_item ORDER BY price DESC LIMIT 1;\n\n"
-        + "Q: How many orders did each waiter handle?\n"
-        + "A: SELECT s.name, COUNT(o.order_id) AS total_orders "
-        +    "FROM staff s JOIN restaurant_order o ON s.staff_id = o.staff_id "
-        +    "GROUP BY s.staff_id ORDER BY total_orders DESC;\n\n"
+        + "\n\nExamples (from a different database — a school database):\n"
+        + "Q: Which students have the highest GPA?\n"
+        + "A: SELECT name, gpa FROM student ORDER BY gpa DESC LIMIT 5;\n\n"
+        + "Q: How many students are enrolled in each course?\n"
+        + "A: SELECT c.title, COUNT(e.student_id) AS total "
+        +    "FROM course c JOIN enrollment e ON c.course_id = e.course_id "
+        +    "GROUP BY c.course_id ORDER BY total DESC;\n\n"
         + SQL_ONLY
     ),
 }
@@ -143,11 +145,11 @@ def main():
 
     # Let the user pick a strategy
     print("Prompting strategies:")
-    print("  1 - zero_shot    (schema only)")
-    print("  2 - single_domain (schema + 1 example)")
-    print("  3 - multi_domain  (schema + 2 examples)")
+    print("  1 - zero_shot     (schema only)")
+    print("  2 - single_domain (schema + 1 example, same domain)")
+    print("  3 - cross_domain  (schema + 2 examples from a different database)")
     choice = input("\nPick a strategy [1/2/3] (default 1): ").strip()
-    strategy_map = {"2": "single_domain", "3": "multi_domain"}
+    strategy_map = {"2": "single_domain", "3": "cross_domain"}
     strategy = strategy_map.get(choice, "zero_shot")
     print(f"\n✅ Using strategy: {strategy}\n")
 
